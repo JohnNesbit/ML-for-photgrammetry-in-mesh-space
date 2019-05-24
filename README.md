@@ -1,7 +1,7 @@
 # ML-for-photgrammetry-in-mesh-space
 (untrained)script that converts multiple pictures into 3D models of the things detailed in the pictures
 
-#what it does
+# what it does
 takes pictures from a library and puts
 them through generator and then outputs them in .off file.
 
