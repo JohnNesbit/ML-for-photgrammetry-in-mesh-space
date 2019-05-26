@@ -1,12 +1,9 @@
 """
 this script takes in color photos from a pictures dir
-and converts them to aomputation graph for the Descriminator
-and generator. once ndarrays, then TF tensors
-then it defines the cthat is done it feeds the descriminator
-a real 2d image and a segmented version of the 3d array that the
-generator produces allowing for matrix subtractions to find the
-output error. then the script uses adam to improve the generator's
-models in respective comparison of angles to the training images
+and converts them to 3D models of the things in the photos(4 per model)
+Preparation:
+1: replace paths at top to respective paths in your system
+2: lines: 243 and 304 replace 2 with amount of sets of images(4 images per set)
 """
 
 
@@ -15,10 +12,12 @@ from open3d import *
 import os
 import PIL.Image as Image
 
-
+bat_path = "E:/PycharmProjects/3DMesh_Development/data_stuff/run_seg2102" # where bat file is
+epoch_save_path = "E:/PycharmProjects/3DMesh_Development/data_stuff/idk_epoch.off" # where to save off file to 
+lsave_path = "E:/PycharmProjects/3DMesh_Development/PHOTOS_GAN_SAVES/" # dir for epoch benchmarks
 xtrain = np.array([])
-picpath = "E:/PycharmProjects/3DMesh_Development/pictures/"
-npicpath = "E:/PycharmProjects/3DMesh_Development/data_stuff/tmp/idk_epoch"
+picpath = "E:/PycharmProjects/3DMesh_Development/pictures/" # dir with pictures
+npicpath = "E:/PycharmProjects/3DMesh_Development/data_stuff/tmp/idk_epoch" # dir for renderings
 for x in os.listdir(picpath):
     ia = Image.open(picpath + x)
     ia = np.array(ia.convert('L'))
@@ -150,14 +149,12 @@ def discriminator(data):
     return d
 
 
-# add shit so that output includes extra [333, 3] 100: interchangeable but needs to be put in line 151 also add 3 at
-# bigenning of all the line s to tell how many verteces all values need to be int not bc they are indeces
 def save_func(xdata, path):
     nls = ""
     predarr = ""
     print("seg starts")
     print(xdata.shape)
-    filx = open("E:/PycharmProjects/3DMesh_Development/data_stuff/" + path, "w", encoding="ASCII")
+    filx = open(path, "w+", encoding="ASCII")
     for lll in range(1001):
         item = xdata[lll]
         str_arr = np.array_str(item)
@@ -179,7 +176,7 @@ def save_func(xdata, path):
         prepd.replace("  ", " ")
     filx.write(prepd)
     filx.close()
-    filxr = open("E:/PycharmProjects/3DMesh_Development/data_stuff/" + path, "r+")
+    filxr = open(path, "r+")
     for xix in filxr.readlines():
         if "OFF" or "1000 333" in xix:
             continue
@@ -197,8 +194,7 @@ def segment(xdata):
     predarr = ""
     print("seg starts")
     print(xdata.shape)
-    path = "idk_epoch.off"
-    filx = open("E:/PycharmProjects/3DMesh_Development/data_stuff/" + path, "w", encoding="ASCII")
+    filx = open(epoch_save_path, "w", encoding="ASCII")
     for lll in range(1001):
         item = xdata[lll]
         str_arr = np.array_str(item)
@@ -220,7 +216,7 @@ def segment(xdata):
         prepd.replace("  ", " ")
     filx.write(prepd)
     filx.close()
-    filxr = open("E:/PycharmProjects/3DMesh_Development/data_stuff/" + path, "r+")
+    filxr = open(epoch_save_path, "r+")
     for xix in filxr.readlines():
         if "OFF" or "1000 333" in xix:
             continue
@@ -230,7 +226,7 @@ def segment(xdata):
         nls = nls + str_nxix + "\n"
     filxr.write(nls)
     filxr.close()
-    os.system("E:/PycharmProjects/3DMesh_Development/data_stuff/run_seg2102")
+    os.system(bat_path)
     for xx in os.listdir(npicpath):
         nia = Image.open(npicpath + "/" + xx)
         #nia = crop(nia, []) # neeeded dims=(2448, 3264)
@@ -240,7 +236,6 @@ def segment(xdata):
     nxtrain.reshape([1, 6528, 4896, 1])
 
     return tf.reshape(tf.convert_to_tensor(nxtrain, dtype=tf.float32), shape=[1, 6528, 4896, 1])
-    # SEGMENT WORKS IN BLENDER FUCK YES ! dont change!!
 
 
 # temparary data values that we can swap easily.
@@ -330,8 +325,9 @@ for i in range(2):
         print("Descriminator_loss:" + str(dLossReal))
         #mdsaver
         sess.run(save_func(np.array(pro_pcd_arr(generator(x_placeholder))),
-                           path="E:/PycharmProjects/3DMesh_Development/PHOTOS_GAN_SAVES/save" + str(i) + ".off"))
+                           path= lsave_path + "save" + str(i) + ".off"))
 
     if i % 20 == 0:
         save_path = saver.save(sess, "models/pretrained_3ddcgan.ckpt", global_step=i)
         print("saved to %s" % save_path)
+
