@@ -3,6 +3,9 @@ this script takes in color photos from a pictures dir
 and converts them to 3D models of the things in the photos(4 per model)
 Preparation:
 1: replace paths at top to respective paths in your system
+(data_stuff is my dir that houses the phong clone, 
+rendered images, run_seg2102 and the generated .off for training(not the saved benchmark ones)
+)
 2: lines: 243 and 304 replace 2 with amount of sets of images(4 images per set)
 """
 
