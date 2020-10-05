@@ -1,5 +1,5 @@
 # ML-for-photgrammetry-in-mesh-space
-(untrained)script that converts multiple pictures into 3D models of the things detailed in the pictures
+Script that converts multiple pictures into 3D models of the things detailed in the pictures. This is obviously an practice repo without almost any data.
 
 # what it does
 takes pictures from a library and puts
